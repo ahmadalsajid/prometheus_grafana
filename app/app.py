@@ -122,13 +122,15 @@ async def create_student(student: StudentModel = Body(...)):
     response_model=StudentCollection,
     response_model_by_alias=False,
 )
-async def list_students():
+async def list_students(registration: int | None = None):
     """
     List all the student data in the database.
 
     The response is unpaginated and limited to 1000 results.
     """
     print(f'Response from server IP: {socket.gethostbyname(socket.gethostname())}')
+    if registration:
+        return StudentCollection(students=await student_collection.find({"registration": registration}).to_list(1000))
     return StudentCollection(students=await student_collection.find().to_list(1000))
 
 
