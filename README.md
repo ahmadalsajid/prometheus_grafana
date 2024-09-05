@@ -18,18 +18,20 @@ docker exec -it app python create_data.py
 
 ## Access URLs
 
-- Application API doc : http://localhost:8000/docs
+- Application API doc : http://localhost:8000/docs     # Without Nginx
+- Application API doc : http://localhost:1337/docs     # With Nginx
 - Mongo Express       : http://localhost:8081/
 - Locust              : http://localhost:8089/
 
-> While using `Locust` at http://localhost:8089/, use http://app:8000 as the `Host`
+> While using `Locust` at http://localhost:8089/, use http://app:8000 [without
+> Nginx] or http://nginx [with Nginx] as the `Host`
 
 ## Tasks
 
 - [x] **Task-1** : Set up MongoDB
 - [x] **Task-2** : Create FastAPI app with MongoDB
 - [x] **Task-3** : Locust test configuration and testing
-- [ ] **Task-4** : Nginx to serve FasAPI application
+- [x] **Task-4** : Nginx to serve FasAPI application
 - [ ] **Task-5** : Prometheus to collect metrics from FastAPI app
 - [ ] **Task-6** : Grafana for visualization
 - [ ] **Task-7** : Prometheus and Grafana for Nginx
