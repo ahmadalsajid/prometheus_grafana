@@ -24,7 +24,7 @@ services:
     container_name: app
     image: app
     hostname: app
-    command: uvicorn app:app --host 0.0.0.0 --port 8000 --workers 2 --reload --proxy-headers --forwarded-allow-ips=*,
+    command: uvicorn app:app --host 0.0.0.0 --port 8000 --workers 2 --reload --proxy-headers --forwarded-allow-ips=*
     ports:
       - 8000:8000
     volumes:
@@ -37,8 +37,8 @@ services:
       MONGO_DB_COLLECTION: ${MONGO_DB_COLLECTION}
       MONGO_USER_USERNAME: ${MONGO_USER_USERNAME}
       MONGO_USER_PASSWORD: ${MONGO_USER_PASSWORD}
-    depends_on:
-      - mongo
+#    depends_on:
+#      - mongo
     healthcheck:
       test: curl --fail http://localhost:8000/healthcheck/ || exit 1
       interval: 30s
@@ -64,7 +64,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-      - mongodb-data:/data/db/
+      - ./mongodb-data:/data/db/
     env_file:
       - .env
     environment:
@@ -120,7 +120,7 @@ services:
     container_name: locust-master
     restart: unless-stopped
     ports:
-      - "8089:8089"
+      - 8089:8089
     volumes:
       - ./app:/mnt/locust
     command: -f /mnt/locust/locustfile.py --master -H http://locust-master:8089
@@ -145,7 +145,7 @@ services:
     command: -f /mnt/locust/locustfile.py --worker --master-host locust-master
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 2
       resources:
         limits:
           cpus: '0.50'
@@ -156,10 +156,34 @@ services:
     networks:
       - application_network
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    hostname: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus-data/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+        reservations:
+          cpus: '0.15'
+          memory: 128M
+    networks:
+      application_network:
+        ipv4_address: 172.28.5.34
+
 
 volumes:
   mongodb-data:
     name: mongodb-data
+  prometheus-data:
+    name: prometheus-data
 
 networks:
   application_network:

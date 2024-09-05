@@ -3,7 +3,7 @@ ENV PYTHONUNBUFFERED=1
 RUN adduser --system --no-create-home nonroot
 WORKDIR /app
 RUN apk update && \
-    apk add curl && \
+    apk add curl gcc musl-dev linux-headers python3-dev && \
     rm -rf /var/cache/apk/*
 
 COPY requirements.txt /app

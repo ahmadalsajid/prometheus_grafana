@@ -9,6 +9,7 @@ from bson import ObjectId
 import motor.motor_asyncio
 from pymongo import ReturnDocument
 from dotenv import load_dotenv
+from prometheus_fastapi_instrumentator import Instrumentator
 
 load_dotenv()
 
@@ -16,6 +17,7 @@ app = FastAPI(
     title="Student Course API",
     summary="A sample application showing how to use FastAPI to add a ReST API to a MongoDB collection.",
 )
+Instrumentator().instrument(app).expose(app)
 
 MONGODB_URL = os.getenv("MONGODB_URL")
 MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
