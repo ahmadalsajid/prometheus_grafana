@@ -1,4 +1,28 @@
 services:
+  cadvisor:
+    container_name: cadvisor
+    hostname: cadvisor
+    image: gcr.io/cadvisor/cadvisor:latest
+    ports:
+      - 8080:8080
+    volumes:
+      - "/:/rootfs"
+      - "/var/run:/var/run"
+      - "/sys:/sys"
+      - "/var/lib/docker/:/var/lib/docker"
+      - "/dev/disk/:/dev/disk"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 100M
+        reservations:
+          cpus: '0.15'
+          memory: 50M
+    networks:
+      application_network:
+        ipv4_address: 172.28.5.28
+
   nginx:
     build: ./nginx
     hostname: nginx
@@ -163,7 +187,7 @@ services:
     ports:
       - 9090:9090
     environment:
-      - GF_INSTALL_PLUGINS: grafana-clock-panel, grafana-simple-json-datasource
+      GF_INSTALL_PLUGINS: grafana-clock-panel, grafana-simple-json-datasource
     volumes:
       - ./prometheus-data/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
@@ -200,7 +224,6 @@ services:
       application_network:
         ipv4_address: 172.28.5.35
 
-
 volumes:
   mongodb-data:
     name: mongodb-data
@@ -208,7 +231,6 @@ volumes:
     name: prometheus-data
   grafana-data:
     name: grafana-data
-
 
 networks:
   application_network:
